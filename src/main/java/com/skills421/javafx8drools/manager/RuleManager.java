@@ -5,8 +5,10 @@
  */
 package com.skills421.javafx8drools.manager;
 
+import com.skills421.javafx8drools.MainApp;
 import com.sksills421.javafx8drools.model.Person;
 import com.sksills421.javafx8drools.rules.RuleRunner;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,9 +17,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
+
 import javafx.concurrent.Task;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
@@ -144,6 +148,7 @@ public class RuleManager
             @Override
             protected void succeeded()
             {
+            	MessageManager.getInstance().displayMessage("Rule Message", "Rule file saved.");
                 System.out.println("Saved");
             }
 
