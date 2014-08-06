@@ -9,14 +9,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieRepository;
-import org.kie.api.builder.Message.Level;
 import org.kie.api.io.KieResources;
 import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 
 /**
@@ -36,45 +35,38 @@ public class RuleRunner
         {
             br.lines().forEach(s -> System.out.println(s));
         }
-        catch(IOException e)
+        catch (IOException e)
         {
             System.out.println(e);
         }
     }
 
-    public KieContainer buildKieContainer(Path[] rules)
+    public KieContainer buildKieContainer(List<Path> rulePaths)
     {
+        KieServices ks = KieServices.Factory.get();
+        KieResources kr = ks.getResources();
 
-        KieServices kieServices = KieServices.Factory.get();
-        KieResources kieResources = kieServices.getResources();
-        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
-        KieRepository kieRepository = kieServices.getRepository();
+        KieFileSystem kfs = ks.newKieFileSystem();
 
-        for (Path ruleFilePath : rules)
+        rulePaths.forEach(rulePath ->
         {
-            //Resource resource = kieResources.newFileSystemResource(ruleFilePath.toAbsolutePath().toFile());
-            Resource resource = kieResources.newClassPathResource(ruleFilePath.toString());
+            try
+            {
+                Resource resource = kr.newInputStreamResource(Files.newInputStream(rulePath, StandardOpenOption.READ));
+                resource.setResourceType(ResourceType.DRL);
+                
+                kfs.write(rulePath.toString(),resource);
+            }
+            catch (IOException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        });
 
-            // path has to start with src/main/resources
-            // append it with the package from the rule
-            String kiePath = "src/main/resources/" + ruleFilePath.toString();
-            System.out.println("Processing Rule File: " + kiePath);
-            printFileContent(Paths.get(kiePath));
-            kieFileSystem.write(kiePath, resource);
-        }
+        ks.newKieBuilder(kfs).buildAll();
 
-        KieBuilder kb = kieServices.newKieBuilder(kieFileSystem);
+        KieContainer kc = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
-        kb.buildAll();
-
-        if (kb.getResults().hasMessages(Level.ERROR))
-        {
-            System.out.println(kb.getResults().toString());
-            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
-        }
-
-        KieContainer kContainer = kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
-
-        return kContainer;
+        return kc;
     }
 }

@@ -10,12 +10,12 @@ import com.sksills421.javafx8drools.model.Person;
 import com.sksills421.javafx8drools.rules.RuleRunner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Test;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -35,13 +35,13 @@ public class TestRuleRunner
     {
         RuleRunner runner = new RuleRunner();
  
-        Path[] rules = { Paths.get("com/skills421/examples/rules/test1.drl") };
+        List<Path> rulePaths = Arrays.asList(new Path[]{Paths.get("com/skills421/examples/rules/test1.drl")});
         Person jonDoe =  new Person("Jon Doe", 21, Person.MALE);
         Person janeDoe =  new Person("Jane Doe", 19, Person.FEMALE);
         Person markDoe =  new Person("Mark Doe", 2, Person.MALE);
         Person rubyDoe =  new Person("Ruby Doe", 5, Person.FEMALE);
  
-        KieContainer kContainer = runner.buildKieContainer(rules);
+        KieContainer kContainer = runner.buildKieContainer(rulePaths);
         
         KieSession kSession = kContainer.newKieSession();
         
