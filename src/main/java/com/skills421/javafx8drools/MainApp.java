@@ -19,9 +19,18 @@ import javafx.stage.Stage;
  */
 public class MainApp extends Application
 {
+    private static Stage mainStage;
+    
+    public static Stage mainStage()
+    {
+        return mainStage;
+    }
+    
    @Override
     public void start(Stage primaryStage)
     {
+        mainStage = primaryStage;
+        
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root, 650, 500, Color.WHITE);
 

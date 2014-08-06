@@ -6,8 +6,8 @@
 
 package com.skills421.javafxdrools.rules;
 
+import com.skills421.javafx8drools.manager.RuleManager;
 import com.sksills421.javafx8drools.model.Person;
-import com.sksills421.javafx8drools.rules.RuleRunner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -33,15 +33,15 @@ public class TestRuleRunner
     @Test
     public void testRuleRunner()
     {
-        RuleRunner runner = new RuleRunner();
+        RuleManager ruleManager = RuleManager.getInstance();
  
-        List<Path> rulePaths = Arrays.asList(new Path[]{Paths.get("com/skills421/examples/rules/test1.drl")});
+        List<Path> rulePaths = Arrays.asList(new Path[]{Paths.get("src/main/resources/com/skills421/examples/rules/test1dflt.drl")});
         Person jonDoe =  new Person("Jon Doe", 21, Person.MALE);
         Person janeDoe =  new Person("Jane Doe", 19, Person.FEMALE);
         Person markDoe =  new Person("Mark Doe", 2, Person.MALE);
         Person rubyDoe =  new Person("Ruby Doe", 5, Person.FEMALE);
  
-        KieContainer kContainer = runner.buildKieContainer(rulePaths);
+        KieContainer kContainer = ruleManager.buildKieContainer(rulePaths);
         
         KieSession kSession = kContainer.newKieSession();
         

@@ -5,9 +5,7 @@
  */
 package com.skills421.javafx8drools.manager;
 
-import com.skills421.javafx8drools.MainApp;
 import com.sksills421.javafx8drools.model.Person;
-import com.sksills421.javafx8drools.rules.RuleRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +19,13 @@ import java.util.List;
 import javafx.concurrent.Task;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.Message.Level;
+import org.kie.api.io.KieResources;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -61,11 +66,9 @@ public class RuleManager
             @Override
             protected Object call() throws Exception
             {
-                RuleRunner runner = new RuleRunner();
-
                 List<Path> rulePaths = Arrays.asList(new Path[]{Paths.get(RULEPATH)});
 
-                if(kContainer==null) kContainer = runner.buildKieContainer(rulePaths);
+                if(kContainer==null) buildKieContainer(rulePaths);
 
                 KieSession kSession = kContainer.newKieSession();
 
@@ -155,5 +158,41 @@ public class RuleManager
         };
 
         new Thread(readTask).start();
+    }
+    
+    public KieContainer buildKieContainer(List<Path> rulePaths)
+    {
+        KieServices ks = KieServices.Factory.get();
+        KieResources kr = ks.getResources();
+
+        KieFileSystem kfs = ks.newKieFileSystem();
+
+        rulePaths.forEach(rulePath ->
+        {
+            try
+            {
+                Resource resource = kr.newInputStreamResource(Files.newInputStream(rulePath, StandardOpenOption.READ));
+                resource.setResourceType(ResourceType.DRL);
+                
+                kfs.write(rulePath.toString(),resource);
+            }
+            catch (IOException e)
+            {
+                MessageManager.getInstance().displayError("Rule Build Error", e.getMessage());
+            }
+        });
+        
+        KieBuilder kb = ks.newKieBuilder(kfs);
+  
+        kb.buildAll();
+        
+        if (kb.getResults().hasMessages(Level.ERROR))
+        {
+            MessageManager.getInstance().displayError("Rule Build Error", kb.getResults().toString());
+        }
+
+        this.kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
+        
+        return this.kContainer;
     }
 }
