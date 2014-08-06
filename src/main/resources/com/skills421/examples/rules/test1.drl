@@ -1,0 +1,27 @@
+package com.skills421.examples.rules
+ 
+import com.sksills421.javafx8drools.model.Person
+ 
+dialect "mvel"
+ 
+/*
+ * This rule checks for potential children
+ */
+rule "Match Children"
+    when
+        $parent : Person($parentAge:age>15)   
+        $child : Person(age<$parentAge-15)
+    then
+        $parent.addChild($child);
+end
+
+/* 
+ * this rule checks for potential spouses (could not be old enough to be a parent
+ */
+rule "Match Spouses"
+    when
+        $partner1 : Person($partnerAge:age>15,$partnerName:name)   
+        $partner2 : Person(this!=$partner1,$age:age>15,$age>$partnerAge-15)
+    then
+        $partner1.addSpouse($partner2);
+end
