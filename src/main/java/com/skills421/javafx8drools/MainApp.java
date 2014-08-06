@@ -7,32 +7,35 @@ package com.skills421.javafx8drools;
 
 import com.sksills421.javafx8drools.model.Person;
 import com.sksills421.javafx8drools.rules.RuleRunner;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
@@ -42,8 +45,14 @@ import org.kie.api.runtime.KieSession;
  */
 public class MainApp extends Application
 {
+
+    private ObservableList<Person> allPeople;
+    private ObservableList<Person> possiblePartners;
+    private ObservableList<Person> possibleChildren;
+
     private TableView<Person> allPeopleTableView;
-    
+    private TextArea ruleTA;
+
     private ObservableList<Person> getAllPeople()
     {
         Person jonDoe = new Person("Jon Doe", 21, Person.MALE);
@@ -190,32 +199,31 @@ public class MainApp extends Application
                 allPeople.forEach(p -> kSession.insert(p));
 
                 kSession.fireAllRules();
-                
+
                 return true;
             }
-            
+
             @Override
-            protected void succeeded() 
-            { 
+            protected void succeeded()
+            {
                 allPeopleTableView.requestFocus();
                 allPeopleTableView.getSelectionModel().select(allPeopleTableView.getSelectionModel().getFocusedIndex());
             }
-            
+
         };
-        
+
         new Thread(ruleTask).start();
     }
 
-    @Override
-    public void start(Stage primaryStage)
+    private Tab createDataTab()
     {
-        final ObservableList<Person> allPeople = this.getAllPeople();
-        final ObservableList<Person> possiblePartners = FXCollections.observableArrayList();
-        final ObservableList<Person> possibleChildren = FXCollections.observableArrayList();
+        Tab dataTab = new Tab("Data");
 
-        BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 650, 250, Color.WHITE);
+        // add BorderPane to the tab
+        BorderPane dataTabPane = new BorderPane();
+        dataTab.setContent(dataTabPane);
 
+        // now add the content to the BorderPane
         GridPane gridpane = new GridPane();
         gridpane.setHgap(10);
         gridpane.setVgap(10);
@@ -267,23 +275,150 @@ public class MainApp extends Application
         bottomPane.getChildren().addAll(resetDataButton, fireRulesButton);
 
         //
-        
-        resetDataButton.setOnAction(event -> 
+        resetDataButton.setOnAction(event ->
         {
             int idx = allPeopleTableView.getSelectionModel().getSelectedIndex();
-            
-            this.resetData(allPeople); 
-            
+
+            this.resetData(allPeople);
+
             allPeopleTableView.getSelectionModel().select(idx);
             allPeopleTableView.requestFocus();
-            
+
         });
-        
+
         fireRulesButton.setOnAction(event -> this.fireRules(allPeople));
 
         //
-        root.setCenter(gridpane);
-        root.setBottom(bottomPane);
+        dataTabPane.setCenter(gridpane);
+        dataTabPane.setBottom(bottomPane);
+
+        return dataTab;
+    }
+
+    private void readRules(final TextArea ruleTA)
+    {
+        StringBuilder ruleContentSB = new StringBuilder();
+
+        Task readTask = new Task()
+        {
+            @Override
+            protected Object call() throws Exception
+            {
+                Path rulePath = Paths.get("src/main/resources/com/skills421/examples/rules/test1.drl");
+                
+                System.out.println("Reading Rule File: "+rulePath.toString());
+
+                try (BufferedReader br = Files.newBufferedReader(rulePath))
+                {
+                    br.lines()
+                            .forEach(s -> {
+                                System.out.println("Line: "+s);
+                                ruleContentSB.append(s);
+                                ruleContentSB.append("\n");
+                            });
+                }
+                catch (IOException e)
+                {
+                    System.out.println(e.getMessage());
+                }
+                
+                return true;
+            }
+
+            @Override
+            protected void succeeded()
+            {
+                ruleTA.setText(ruleContentSB.toString());
+            }
+
+        };
+
+        new Thread(readTask).start();
+    }
+    
+    private void saveRules()
+    {
+        Task readTask = new Task()
+        {
+            @Override
+            protected Object call() throws Exception
+            {
+                Path rulePath = Paths.get("src/main/resources/com/skills421/examples/rules/test1.drl");
+                
+                System.out.println("Writing Rule File: "+rulePath.toString());
+
+                String content = ruleTA.getText();
+                Files.write(rulePath, content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+                
+                return true;
+            }
+
+            @Override
+            protected void succeeded()
+            {
+                System.out.println("Saved");
+            }
+
+        };
+
+        new Thread(readTask).start();
+    }
+
+    private Tab createRuleTab()
+    {
+        Tab ruleTab = new Tab("Rules");
+
+        BorderPane rulePane = new BorderPane();
+        rulePane.setPadding(new Insets(5));
+        ruleTab.setContent(rulePane);
+
+        // top
+        FlowPane topPane = new FlowPane(10, 10);
+        topPane.setAlignment(Pos.CENTER);
+        Label ruleLbl = new Label("Rules");
+        topPane.getChildren().add(ruleLbl);
+
+        // middle
+        ruleTA = new TextArea();
+
+        // bottom
+        FlowPane bottomPane = new FlowPane(10, 10);
+        bottomPane.setPadding(new Insets(5));
+        bottomPane.setAlignment(Pos.CENTER);
+
+        Button saveButton = new Button("Save");
+        bottomPane.getChildren().addAll(saveButton);
+
+        rulePane.setTop(topPane);
+        rulePane.setCenter(ruleTA);
+        rulePane.setBottom(bottomPane);
+
+        //
+        saveButton.setOnAction(event -> saveRules());
+        
+        // read the rules
+        readRules(ruleTA);
+
+        return ruleTab;
+    }
+
+    @Override
+    public void start(Stage primaryStage)
+    {
+        allPeople = this.getAllPeople();
+        possiblePartners = FXCollections.observableArrayList();
+        possibleChildren = FXCollections.observableArrayList();
+
+        BorderPane root = new BorderPane();
+        Scene scene = new Scene(root, 650, 250, Color.WHITE);
+
+        TabPane tabPane = new TabPane();
+        root.setCenter(tabPane);
+
+        Tab dataTab = createDataTab();
+        Tab ruleTab = createRuleTab();
+
+        tabPane.getTabs().addAll(dataTab, ruleTab);
 
         primaryStage.setTitle("Ancestry!");
         primaryStage.setScene(scene);
