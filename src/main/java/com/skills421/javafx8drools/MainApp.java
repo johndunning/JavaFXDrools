@@ -5,6 +5,8 @@
  */
 package com.skills421.javafx8drools;
 
+import com.skills421.javafx8drools.component.RuleTab;
+import com.skills421.javafx8drools.component.DataTab;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.skills421.javafx8drools;
+package com.skills421.javafx8drools.component;
 
 import com.sksills421.javafx8drools.model.Person;
 import javafx.collections.ObservableList;

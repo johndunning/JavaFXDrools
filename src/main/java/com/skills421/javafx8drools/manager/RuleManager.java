@@ -152,7 +152,6 @@ public class RuleManager
             protected void succeeded()
             {
             	MessageManager.getInstance().displayMessage("Rule Message", "Rule file saved.");
-                System.out.println("Saved");
             }
 
         };

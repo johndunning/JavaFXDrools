@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.skills421.javafx8drools;
+package com.skills421.javafx8drools.component;
 
 import com.skills421.javafx8drools.manager.DataManager;
 import com.skills421.javafx8drools.manager.RuleManager;
