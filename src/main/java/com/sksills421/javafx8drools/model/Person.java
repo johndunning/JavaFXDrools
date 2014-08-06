@@ -8,6 +8,8 @@ package com.sksills421.javafx8drools.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -18,7 +20,7 @@ public class Person
     public static final String MALE = "male";
     public static final String FEMALE = "female";
     
-    private String name;
+    private StringProperty name;
     private int age;
     private String sex;
     
@@ -32,19 +34,28 @@ public class Person
  
     public Person(String name, int age, String sex)
     {
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.age = age;
         this.sex = sex;
     }
  
-    public String getName()
+    public StringProperty nameProperty()
     {
+        if (name == null)
+        {
+            name = new SimpleStringProperty();
+        }
         return name;
     }
  
+    public String getName()
+    {
+        return nameProperty().get();
+    }
+    
     public void setName(String name)
     {
-        this.name = name;
+        nameProperty().set(name);
     }
  
     public int getAge()

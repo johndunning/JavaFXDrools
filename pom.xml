@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>com.sksills421.javafx8drools.MainApp</mainClass>
+        <mainClass>com.skills421.javafx8drools.MainApp</mainClass>
         
         <drools.version>6.1.0.Final</drools.version>
         <junit.version>4.11</junit.version>
