@@ -9,7 +9,7 @@ dialect "mvel"
  */
 rule "Match Children"
     when
-        $parent : Person($parentAge:age>15)   
+        $parent : Person($parentAge:age>19)   
         $child : Person(age<$parentAge-15)
     then
         $parent.addChild($child);

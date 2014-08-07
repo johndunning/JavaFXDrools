@@ -18,11 +18,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class DataTableView extends TableView<Person>
 {
-    public DataTableView(ObservableList<Person> spouses)
+    public DataTableView(ObservableList<Person> data)
     {
         setPrefWidth(200);
 
-        setItems(spouses);
+        setItems(data);
 
         TableColumn<Person, String> nameCol = new TableColumn<>("Name");
         TableColumn<Person, Integer> ageCol = new TableColumn<>("Age");

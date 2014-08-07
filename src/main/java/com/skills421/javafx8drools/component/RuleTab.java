@@ -56,8 +56,5 @@ public class RuleTab extends Tab
 
         //
         saveButton.setOnAction(event -> RuleManager.getInstance().saveRules(ruleTA));
-        
-        // read the rules
-        RuleManager.getInstance().readRules(ruleTA);
     }
 }
