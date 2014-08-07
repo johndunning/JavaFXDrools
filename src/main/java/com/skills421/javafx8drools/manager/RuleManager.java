@@ -159,11 +159,10 @@ public class RuleManager
         new Thread(readTask).start();
     }
     
-    public KieContainer buildKieContainer(List<Path> rulePaths)
+    private KieContainer buildKieContainer(List<Path> rulePaths)
     {
         KieServices ks = KieServices.Factory.get();
         KieResources kr = ks.getResources();
-
         KieFileSystem kfs = ks.newKieFileSystem();
 
         rulePaths.forEach(rulePath ->
