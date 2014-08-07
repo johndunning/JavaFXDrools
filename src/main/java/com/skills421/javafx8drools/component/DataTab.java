@@ -82,9 +82,11 @@ public class DataTab extends Tab
         bottomPane.setPadding(new Insets(5));
         bottomPane.setAlignment(Pos.CENTER);
 
+        Button resetDataButton = new Button("Reset Data");
         Button fireRulesButton = new Button("Fire Rules");
-        bottomPane.getChildren().addAll(fireRulesButton);
+        bottomPane.getChildren().addAll(resetDataButton,fireRulesButton);
 
+        resetDataButton.setOnAction(event -> DataManager.getInstance().resetPeople());
         fireRulesButton.setOnAction(event -> RuleManager.getInstance().fireRules(allPeopleTableView));
 
         //
