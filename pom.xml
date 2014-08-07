@@ -15,6 +15,7 @@
 		<mainClass>com.skills421.javafx8drools.MainApp</mainClass>
 
 		<drools.version>6.1.0.Final</drools.version>
+                <controlsfx.version>8.0.6_20</controlsfx.version>
 		<junit.version>4.11</junit.version>
 		<java.version>1.8</java.version>
 	</properties>
@@ -38,7 +39,7 @@
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.0.6</version>
+			<version>${controlsfx.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
