@@ -51,10 +51,10 @@ public class DataTab extends Tab
             if (observable != null && observable.getValue() != null)
             {
                 DataManager.getInstance().getPossiblePartners().clear();
-                DataManager.getInstance().getPossiblePartners().addAll(observable.getValue().getSpouses());
+                DataManager.getInstance().getPossiblePartners().addAll(observable.getValue().spousesProperty());
 
                 DataManager.getInstance().getPossibleChildren().clear();
-                DataManager.getInstance().getPossibleChildren().addAll(observable.getValue().getChildren());
+                DataManager.getInstance().getPossibleChildren().addAll(observable.getValue().childrenProperty());
 
             }
         });

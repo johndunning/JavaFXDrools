@@ -6,10 +6,12 @@
 
 package com.sksills421.javafx8drools.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -21,11 +23,11 @@ public class Person
     public static final String FEMALE = "female";
     
     private StringProperty name;
-    private int age;
-    private String sex;
+    private IntegerProperty age;
+    private StringProperty sex;
     
-    private List<Person> spouses;
-    private List<Person> children;
+    private ObservableList<Person> spouses = FXCollections.observableArrayList();
+    private ObservableList<Person> children= FXCollections.observableArrayList();
  
     public Person()
     {
@@ -35,8 +37,8 @@ public class Person
     public Person(String name, int age, String sex)
     {
         this.name = new SimpleStringProperty(name);
-        this.age = age;
-        this.sex = sex;
+        this.age = new SimpleIntegerProperty(age);
+        this.sex = new SimpleStringProperty(sex);
     }
  
     public StringProperty nameProperty()
@@ -46,6 +48,34 @@ public class Person
             name = new SimpleStringProperty();
         }
         return name;
+    }
+    
+    public IntegerProperty ageProperty()
+    {
+        if (age == null)
+        {
+            age = new SimpleIntegerProperty();
+        }
+        return age;
+    }
+    
+    public StringProperty sexProperty()
+    {
+        if (sex == null)
+        {
+            sex = new SimpleStringProperty();
+        }
+        return sex;
+    }
+    
+    public ObservableList<Person> spousesProperty()
+    {
+        return spouses;
+    }
+    
+    public ObservableList<Person> childrenProperty()
+    {
+        return children;
     }
  
     public String getName()
@@ -60,62 +90,32 @@ public class Person
  
     public int getAge()
     {
-        return age;
+        return ageProperty().get();
     }
  
     public void setAge(int age)
     {
-        this.age = age;
+        ageProperty().set(age);
     }
 
     public String getSex()
     {
-        return sex;
+        return sexProperty().get();
     }
 
     public void setSex(String sex)
     {
-        this.sex = sex;
+        sexProperty().set(sex);
     }
-
-    public List<Person> getSpouses()
-    {
-        if(spouses==null)
-        {
-            spouses = new ArrayList<>();
-        }
-        
-        return spouses;
-    }
-
-    public void setSpouses(List<Person> spouses)
-    {
-        this.spouses = spouses;
-    }
-
-    public List<Person> getChildren()
-    {
-        if(children==null)
-        {
-            children = new ArrayList<>();
-        }
-                
-        return children;
-    }
-
-    public void setChildren(List<Person> children)
-    {
-        this.children = children;
-    }
-    
+   
     public void addSpouse(Person spouse)
     {
-        this.getSpouses().add(spouse);
+        spousesProperty().add(spouse);
     }
     
     public void addChild(Person child)
     {
-        this.getChildren().add(child);
+        childrenProperty().add(child);
     }
  
     public String toString()
